@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import LoginForm from "./components/LoginForm";
+import RegisterForm from "./components/RegisterForm";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: React.FC = () => {
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [message, setMessage] = useState("");
+
+  function handleLoginSuccess(data: { token: string }) {
+    localStorage.setItem("token", data.token);
+    setMessage("Connexion réussie!");
+  }
+
+  function handleRegisterSuccess() {
+    setMessage("Inscription réussie! Vous pouvez maintenant vous connecter.");
+    setMode("login");
+  }
+
+  function handleError(errorMsg: string) {
+    setMessage(errorMsg);
+  }
 
   return (
-    <>
+    <div style={{ fontFamily: "sans-serif", padding: 20 }}>
+      <h1>Mon Application</h1>
+      {message && <p style={{ color: "green" }}>{message}</p>}
+      <div style={{ marginBottom: 20 }}>
+        {mode === "login" ? (
+          <LoginForm onSuccess={handleLoginSuccess} onError={handleError} />
+        ) : (
+          <RegisterForm onSuccess={handleRegisterSuccess} onError={handleError} />
+        )}
+      </div>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        {mode === "login" ? (
+          <p>
+            Pas de compte ?{" "}
+            <button onClick={() => setMode("register")}>S'inscrire</button>
+          </p>
+        ) : (
+          <p>
+            Déjà un compte ?{" "}
+            <button onClick={() => setMode("login")}>Se connecter</button>
+          </p>
+        )}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    </div>
+  );
+};
 
-export default App
+export default App;
