@@ -1,45 +1,35 @@
-import React, { useState } from "react";
-import LoginForm from "./components/LoginForm";
-import RegisterForm from "./components/RegisterForm";
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 
-const App: React.FC = () => {
-  const [mode, setMode] = useState<"login" | "register">("login");
-  const [message, setMessage] = useState("");
-
-  function handleSuccess(successMessage: string) {
-    setMessage(successMessage);
-  }
-
-  function handleError(errorMsg: string) {
-    setMessage(`Erreur : ${errorMsg}`);
-  }
+function App() {
+  const [count, setCount] = useState(0)
 
   return (
-    <div style={{ fontFamily: "sans-serif", padding: 20 }}>
-      <h1>Mon Application</h1>
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      <div style={{ marginBottom: 20 }}>
-        {mode === "login" ? (
-          <LoginForm onSuccess={handleSuccess} onError={handleError} />
-        ) : (
-          <RegisterForm onSuccess={handleSuccess} onError={handleError} />
-        )}
-      </div>
+    <>
       <div>
-        {mode === "login" ? (
-          <p>
-            Pas de compte ?{" "}
-            <button onClick={() => setMode("register")}>S'inscrire</button>
-          </p>
-        ) : (
-          <p>
-            Déjà un compte ?{" "}
-            <button onClick={() => setMode("login")}>Se connecter</button>
-          </p>
-        )}
+        <a href="https://vite.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
       </div>
-    </div>
-  );
-};
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.tsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
+    </>
+  )
+}
 
-export default App;
+export default App
