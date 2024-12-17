@@ -27,3 +27,12 @@ export async function register(username: string, password: string): Promise<stri
   const error = await response.json();
   throw new Error(error.message || "Échec de l'inscription.");
 }
+
+
+export async function checkAuth(): Promise<boolean> {
+  const response = await fetch("http://localhost:3000/auth/me", {
+    method: "GET",
+  });
+
+  return response.status === 200;
+}

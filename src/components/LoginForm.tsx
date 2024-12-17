@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { login } from "../services/api";
+import React, { useState, useEffect } from "react";
+import { login, checkAuth } from "../services/api";
 
 interface LoginFormProps {
   onSuccess: (message: string) => void;
@@ -9,15 +9,42 @@ interface LoginFormProps {
 const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isAlreadyConnected, setIsAlreadyConnected] = useState(false);
 
+  // Vérifie si l'utilisateur est déjà connecté au montage
+  useEffect(() => {
+    async function verifyUser() {
+      try {
+        const isAuthenticated = await checkAuth();
+        if (isAuthenticated) {
+          setIsAlreadyConnected(true);
+          onSuccess("L'utilisateur est déjà connecté.");
+        }
+      } catch {
+        setIsAlreadyConnected(false);
+      }
+    }
+
+    verifyUser();
+  }, [onSuccess]);
+
+  // Tentative de connexion si l'utilisateur n'est pas déjà connecté
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (isAlreadyConnected) {
+      onSuccess("L'utilisateur est déjà connecté.");
+      return;
+    }
+
     try {
-      const message = await login(username, password);
-      onSuccess(message);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      onError(err.message);
+      await login(username, password);
+      onSuccess("Connexion réussie.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        onError(err.message || "Erreur lors de la connexion.");
+      } else {
+        onError("Erreur lors de la connexion.");
+      }
     }
   }
 
@@ -29,7 +56,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
       <h2>Connexion</h2>
       <label>
         Username:
-        <input value={username} onChange={(e) => setUsername(e.target.value)} required />
+        <input
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+          disabled={isAlreadyConnected}
+        />
       </label>
       <label>
         Password:
@@ -38,9 +70,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
           onChange={(e) => setPassword(e.target.value)}
           type="password"
           required
+          disabled={isAlreadyConnected}
         />
       </label>
-      <button type="submit">Se connecter</button>
+      <button type="submit" disabled={isAlreadyConnected}>
+        {isAlreadyConnected ? "Déjà connecté" : "Se connecter"}
+      </button>
     </form>
   );
 };
