@@ -6,18 +6,12 @@ const App: React.FC = () => {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [message, setMessage] = useState("");
 
-  function handleLoginSuccess(data: { token: string }) {
-    localStorage.setItem("token", data.token);
-    setMessage("Connexion réussie!");
-  }
-
-  function handleRegisterSuccess() {
-    setMessage("Inscription réussie! Vous pouvez maintenant vous connecter.");
-    setMode("login");
+  function handleSuccess(successMessage: string) {
+    setMessage(successMessage);
   }
 
   function handleError(errorMsg: string) {
-    setMessage(errorMsg);
+    setMessage(`Erreur : ${errorMsg}`);
   }
 
   return (
@@ -26,9 +20,9 @@ const App: React.FC = () => {
       {message && <p style={{ color: "green" }}>{message}</p>}
       <div style={{ marginBottom: 20 }}>
         {mode === "login" ? (
-          <LoginForm onSuccess={handleLoginSuccess} onError={handleError} />
+          <LoginForm onSuccess={handleSuccess} onError={handleError} />
         ) : (
-          <RegisterForm onSuccess={handleRegisterSuccess} onError={handleError} />
+          <RegisterForm onSuccess={handleSuccess} onError={handleError} />
         )}
       </div>
       <div>
