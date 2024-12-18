@@ -120,6 +120,26 @@ export async function checkAuth(){
   }
 }
 
+export async function logout(){
+  const removeUserId = store.getState().removeUserId;
+  
+  const response = await fetch("http://localhost:3000/auth/logout", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.ok) {
+    removeUserId();
+    localStorage.removeItem("connectedUser");
+    return "Déconnexion réussie.";
+  } else {
+    throw new Error(`Erreur lors de la déconnexion : ${response.status} ${response.statusText}`);
+  }
+}
+
 const generateUniqueId = () => {
   const id = uuidv4(); 
   return id

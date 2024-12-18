@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { login } from "../services/api";
 import { useNavigate } from "react-router-dom";
-import store from "../store/store";
 
 function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const updateUserId = store.getState().updateUserId;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,10 +29,9 @@ function LoginForm() {
   useEffect(() => {
     const userId = localStorage.getItem("connectedUser");
     if (userId) {
-      updateUserId(userId);
       navigate(`/message/611cf330-16c8-428d-ba99-41599339e6fb`);  // temporaire pour faciliter le développement
     }
-  }, [updateUserId, navigate]);
+  }, [navigate]);
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
