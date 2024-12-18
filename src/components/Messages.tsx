@@ -16,6 +16,11 @@ interface Message {
   emitterId?: string;
 }
 
+const canDeleteMessage = (message: Message): boolean => {
+  const connectedUser = localStorage.getItem("connectedUser");
+  return connectedUser === message.emitterId;
+};
+
 function Messages() {
   const { userId } = useParams();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -122,47 +127,42 @@ function Messages() {
         <p>Aucun message trouvé.</p>
       )}
 
-      {!isLoading && !error && messages.length > 0 && (
+{!isLoading && !error && messages.length > 0 && (
         <div>
           {messages
             .slice()
-            .reverse() 
-            .map((message) => {
-              const connectedUser = localStorage.getItem("connectedUser"); 
-              const canDelete = connectedUser === message.emitterId; 
-
-              return (
-                <div
-                  key={message.id}
-                  style={{
-                    border: "1px solid #ddd",
-                    borderRadius: "4px",
-                    padding: "10px",
-                    marginBottom: "10px",
-                    backgroundColor: "#f9f9f9",
-                    position: "relative",
-                    color: "black",
-                  }}
-                >
-                  <div style={{ marginTop: "8px", fontSize: "16px" }}>
-                    {message.content}
-                  </div>
-                  {canDelete && ( 
-                    <FaTrashAlt
-                      onClick={() => handleDeleteMessage(message.id)}
-                      style={{
-                        color: "red",
-                        position: "absolute",
-                        top: "10px",
-                        right: "10px",
-                        cursor: "pointer",
-                        fontSize: "20px",
-                      }}
-                    />
-                  )}
+            .reverse()
+            .map((message) => (
+              <div
+                key={message.id}
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                  padding: "10px",
+                  marginBottom: "10px",
+                  backgroundColor: "#f9f9f9",
+                  position: "relative",
+                  color: "black",
+                }}
+              >
+                <div style={{ marginTop: "8px", fontSize: "16px" }}>
+                  {message.content}
                 </div>
-              );
-            })}
+                {canDeleteMessage(message) && (
+                  <FaTrashAlt
+                    onClick={() => handleDeleteMessage(message.id)}
+                    style={{
+                      color: "red",
+                      position: "absolute",
+                      top: "10px",
+                      right: "10px",
+                      cursor: "pointer",
+                      fontSize: "20px",
+                    }}
+                  />
+                )}
+              </div>
+            ))}
         </div>
       )}
 
