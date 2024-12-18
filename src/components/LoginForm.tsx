@@ -38,7 +38,7 @@ function LoginForm() {
       updateUserId(userId);
       navigate(`/message/611cf330-16c8-428d-ba99-41599339e6fb`);
     }
-  }, [updateUserId, navigate]);
+  }, [navigate]);
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>

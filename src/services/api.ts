@@ -121,6 +121,21 @@ export async function sendFriendRequest(receiverId: string){
   return error + "Demande Error";
 }
 
+export async function getFriends(){
+  const response = await fetch("http://localhost:3000/social/friends", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    return data
+  } else {
+    throw new Error(`Erreur lors de la récupération des amis : ${response.status} ${response.statusText}`);
+  }
+}
+
 export async function checkAuth(){
   const response = await fetch("http://localhost:3000/auth/me", {
     method: "GET",
@@ -135,6 +150,26 @@ export async function checkAuth(){
     return new User(data.id, data.username);
   } else {
     throw new Error(`Erreur d'authentification : ${response.status} ${response.statusText}`);
+  }
+}
+
+export async function logout(){
+  const removeUserId = store.getState().removeUserId;
+  
+  const response = await fetch("http://localhost:3000/auth/logout", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.ok) {
+    removeUserId();
+    localStorage.removeItem("connectedUser");
+    return "Déconnexion réussie.";
+  } else {
+    throw new Error(`Erreur lors de la déconnexion : ${response.status} ${response.statusText}`);
   }
 }
 
