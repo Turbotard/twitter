@@ -1,83 +1,84 @@
-import React, { useState, useEffect } from "react";
-import { login, checkAuth } from "../services/api";
+import { useState } from "react";
+import { login } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
-interface LoginFormProps {
-  onSuccess: (message: string) => void;
-  onError: (message: string) => void;
-}
-
-const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
+function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isAlreadyConnected, setIsAlreadyConnected] = useState(false);
-
-  // Vérifie si l'utilisateur est déjà connecté au montage
-  useEffect(() => {
-    async function verifyUser() {
-      try {
-        const isAuthenticated = await checkAuth();
-        if (isAuthenticated) {
-          setIsAlreadyConnected(true);
-          onSuccess("L'utilisateur est déjà connecté.");
-        }
-      } catch {
-        setIsAlreadyConnected(false);
-      }
-    }
-
-    verifyUser();
-  }, [onSuccess]);
-
-  // Tentative de connexion si l'utilisateur n'est pas déjà connecté
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const navigate = useNavigate();
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isAlreadyConnected) {
-      onSuccess("L'utilisateur est déjà connecté.");
-      return;
-    }
 
     try {
-      await login(username, password);
-      onSuccess("Connexion réussie.");
-    } catch (err: unknown) {
+      const message = await login(username, password);
+      console.log("Connexion réussie :", username);
+      navigate("/message/611cf330-16c8-428d-ba99-41599339e6fb");
+      alert(message)
+    } catch (err) {
       if (err instanceof Error) {
-        onError(err.message || "Erreur lors de la connexion.");
+        console.error(err.message)
       } else {
-        onError("Erreur lors de la connexion.");
+        console.error("Erreur lors de la connexion.");
       }
     }
-  }
+  };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ display: "flex", flexDirection: "column", maxWidth: 300 }}
-    >
+    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <h2>Connexion</h2>
-      <label>
-        Username:
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          maxWidth: "300px",
+          margin: "0 auto",
+        }}
+      >
         <input
+          type="text"
+          placeholder="Nom d'utilisateur"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
-          disabled={isAlreadyConnected}
+          style={{
+            padding: "10px",
+            fontSize: "16px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+          }}
         />
-      </label>
-      <label>
-        Password:
         <input
+          type="password"
+          placeholder="Mot de passe"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          type="password"
           required
-          disabled={isAlreadyConnected}
+          style={{
+            padding: "10px",
+            fontSize: "16px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+          }}
         />
-      </label>
-      <button type="submit" disabled={isAlreadyConnected}>
-        {isAlreadyConnected ? "Déjà connecté" : "Se connecter"}
-      </button>
-    </form>
+        <button
+          type="submit"
+          style={{
+            padding: "10px",
+            backgroundColor: "#28A745",
+            color: "#fff",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "16px",
+          }}
+        >
+          Se connecter
+        </button>
+      </form>
+    </div>
   );
-};
+}
 
 export default LoginForm;

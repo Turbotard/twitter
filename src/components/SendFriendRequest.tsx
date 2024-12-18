@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { sendFriendRequest } from "./services/api";
+import { sendFriendRequest } from "../services/api";
 
 function SendFriendRequest() {
   const [friendId, setFriendId] = useState("");
