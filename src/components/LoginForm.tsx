@@ -15,7 +15,7 @@ function LoginForm() {
     try {
       const message = await login(username, password);
       console.log("Connexion réussie :", username);
-      navigate("/message/611cf330-16c8-428d-ba99-41599339e6fb");  // temporaire pour faciliter le développement
+      navigate("/message/611cf330-16c8-428d-ba99-41599339e6fb");
       alert(message)
     } catch (err) {
       if (err instanceof Error) {
@@ -27,12 +27,16 @@ function LoginForm() {
       }
     }
   };
+  
+  const navRegister = () => {
+    navigate("/register")
+  }
 
   useEffect(() => {
     const userId = localStorage.getItem("connectedUser");
     if (userId) {
       updateUserId(userId);
-      navigate(`/message/611cf330-16c8-428d-ba99-41599339e6fb`);  // temporaire pour faciliter le développement
+      navigate(`/message/611cf330-16c8-428d-ba99-41599339e6fb`);
     }
   }, [updateUserId, navigate]);
 
@@ -88,6 +92,21 @@ function LoginForm() {
           }}
         >
           Se connecter
+        </button>
+        <button
+          type="submit"
+          onClick={navRegister}
+          style={{
+            padding: "10px",
+            backgroundColor: "#28A745",
+            color: "#fff",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "16px",
+          }}
+        >
+          S'inscrire
         </button>
       </form>
     </div>
