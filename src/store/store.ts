@@ -6,7 +6,11 @@ type StoreState = {
   removeUserId: () => void;
   updateUserId: (newUserId: string) => void;
 };
-
+type UserState = {
+  username: string;
+  removeUsernameId: () => void;
+  updateUsernameId: (newUsernameId: string) => void;
+};
 const store = create<StoreState>()(
   persist(
     (set) => ({
@@ -20,6 +24,20 @@ const store = create<StoreState>()(
   )
 );
 
+const usernameStore = create<UserState>()(
+  persist(
+    (set) => ({
+      username: "",
+      removeUsernameId: () => set({ username: "" }),
+      updateUsernameId: (newUsernameId: string) => set({ username: newUsernameId }),
+    }),
+    {
+      name: 'user-storage',
+    } as PersistOptions<UserState>
+  )
+);
+
 export const useStore = store;
+export const useUsernameStore = usernameStore;
 
 export default store;

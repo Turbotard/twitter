@@ -1,10 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 import { User } from "../models/User";
-import store from "../store/store";
+import store, { useUsernameStore }  from "../store/store";
 
 
 export async function login(username: string, password: string){
   const updateUserId = store.getState().updateUserId;
+  const updateUsername = useUsernameStore.getState().updateUsernameId;
 
   const response = await fetch("http://localhost:3000/auth/login", {
     method: "POST",
@@ -16,6 +17,7 @@ export async function login(username: string, password: string){
   if (response.status === 201) {
     const user = await checkAuth();
     updateUserId(user.id);
+    updateUsername(user.username);
     localStorage.setItem("connectedUser", user.id);
     return "L'utilisateur est bien connecté."  + user.id;
   }
