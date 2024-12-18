@@ -23,8 +23,9 @@ function LoginForm() {
       await login(username, password);
       setSuccessMessage("Connexion réussie !");
       console.log("Connexion réussie :", username);
-      navigate("/message/611cf330-16c8-428d-ba99-41599339e6fb");
-      alert(message)
+      setTimeout(() => {
+        navigate("/message/611cf330-16c8-428d-ba99-41599339e6fb");
+      }, 2000);
     } catch (err) {
       if (err instanceof Error) {
         console.error(err.message);
@@ -35,89 +36,105 @@ function LoginForm() {
       }
     }
   };
-  
-  const navRegister = () => {
-    navigate("/register")
-  }
 
   useEffect(() => {
     const userId = localStorage.getItem("connectedUser");
     if (userId) {
       updateUserId(userId);
       navigate(`/message/611cf330-16c8-428d-ba99-41599339e6fb`);
-      navigate(`/message/611cf330-16c8-428d-ba99-41599339e6fb`);
     }
-  }, [navigate]);
+  }, [updateUserId, navigate]);
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h2>Connexion</h2>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-          maxWidth: "300px",
-          margin: "0 auto",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="Nom d'utilisateur"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          style={{
-            padding: "10px",
-            fontSize: "16px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-          }}
-        />
-        <input
-          type="password"
-          placeholder="Mot de passe"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{
-            padding: "10px",
-            fontSize: "16px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-          }}
-        />
-        <button
-          type="submit"
-          style={{
-            padding: "10px",
-            backgroundColor: "#28A745",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "16px",
-          }}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {successMessage && (
+          <div className="fixed bottom-4 right-4 bg-slate-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in z-50 border border-green-500/20">
+            <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-green-500/20">
+              <CheckCircle className="text-green-500" size={16} />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-medium text-sm">Connexion réussie</span>
+              <span className="text-xs text-slate-400">
+                Redirection en cours...
+              </span>
+            </div>
+          </div>
+        )}
+        <form
+          onSubmit={handleSubmit}
+          className="bg-slate-800/50 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-slate-700 relative overflow-hidden"
         >
-          Se connecter
-        </button>
-        <button
-          type="submit"
-          onClick={navRegister}
-          style={{
-            padding: "10px",
-            backgroundColor: "#28A745",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "16px",
-          }}
-        >
-          S'inscrire
-        </button>
-      </form>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl"></div>
+          <div className="text-center mb-8 relative">
+            <h2 className="text-4xl font-bold text-white mb-3 tracking-tight">
+              Bienvenue
+            </h2>
+            <p className="text-slate-400 text-lg">
+              Connectez-vous pour continuer
+            </p>
+          </div>
+          <div className="space-y-6 relative">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Nom d'utilisateur
+              </label>
+              <input
+                type="text"
+                required
+                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-all hover:border-slate-500"
+                placeholder="Entrez votre nom d'utilisateur"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Mot de passe
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-all hover:border-slate-500"
+                  placeholder="Entrez votre mot de passe"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors focus:outline-none"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+            {error && (
+              <p className="text-red-400 text-sm text-center mt-2 bg-red-500/10 py-2 px-3 rounded-lg">
+                {error}
+              </p>
+            )}
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 px-4 rounded-xl font-medium transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg shadow-blue-500/30 hover:opacity-90 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0"
+            >
+              <LogIn size={20} />
+              <span>Se connecter</span>
+            </button>
+            <p className="text-center text-slate-400 text-sm pt-4">
+              Vous n'avez pas de compte ?{" "}
+              <Link
+                to="/register"
+                className="text-blue-400 hover:text-blue-300 transition-colors font-medium"
+              >
+                S'inscrire
+              </Link>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

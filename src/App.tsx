@@ -2,7 +2,6 @@ import {
   BrowserRouter as Router,
   Route,
   Routes,
-  Navigate,
 } from "react-router-dom";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
@@ -14,7 +13,6 @@ import "./styles/App.css";
 function App() {
   return (
     <Router>
-      <LeftMenu />
       <Routes>
         <Route path="/" element={<LeftMenu />} />
         <Route path="/login" element={<LoginForm />} />
