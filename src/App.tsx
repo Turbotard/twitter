@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegisterForm";
+import LeftMenu from "./components/LeftMenu";
+import "./App.css"
 
 const App: React.FC = () => {
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -15,10 +17,11 @@ const App: React.FC = () => {
   }
 
   return (
-    <div style={{ fontFamily: "sans-serif", padding: 20 }}>
+    <div>
+      <LeftMenu />
       <h1>Mon Application</h1>
-      {message && <p style={{ color: "green" }}>{message}</p>}
-      <div style={{ marginBottom: 20 }}>
+      {message && <p>{message}</p>}
+      <div>
         {mode === "login" ? (
           <LoginForm onSuccess={handleSuccess} onError={handleError} />
         ) : (
