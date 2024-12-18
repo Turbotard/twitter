@@ -109,6 +109,7 @@ function Messages() {
                 marginBottom: "10px",
                 backgroundColor: "#f9f9f9",
                 position: "relative",
+                color: "black",
               }}
             >
               <div style={{ marginTop: "8px", fontSize: "16px" }}>

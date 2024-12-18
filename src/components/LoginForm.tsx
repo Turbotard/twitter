@@ -20,8 +20,10 @@ function LoginForm() {
     } catch (err) {
       if (err instanceof Error) {
         console.error(err.message)
+        alert("Mot de passe ou nom d'utilisateur incorrect.")
       } else {
         console.error("Erreur lors de la connexion.");
+        alert("Authentification impossible. Veuillez réessayer.")
       }
     }
   };
