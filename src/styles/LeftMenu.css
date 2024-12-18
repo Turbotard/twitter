@@ -1,0 +1,48 @@
+.left-menu-container {
+    background-color: #1E1E1E;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-logo {
+    background-color: none;
+    padding-left: 20%;
+    padding-right: 20%;
+}
+
+.friend-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.friend-buttons button {
+    width: 50%;
+}
+
+.profile-section {
+    margin-top: auto;
+}
+
+.profile-container {
+    background-color: #838383;
+    color: #FFFFFF;
+    font-weight: bold;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 3%;
+}
+
+.profile-container img {
+    border-radius: 50%;
+    margin-right: 3%;
+}
+
+.profile-container svg {
+    margin-left: auto;
+}
