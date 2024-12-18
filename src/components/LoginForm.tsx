@@ -2,28 +2,36 @@ import { useEffect, useState } from "react";
 import { login } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import store from "../store/store";
+import { Eye, EyeOff, LogIn, CheckCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
   const navigate = useNavigate();
   const updateUserId = store.getState().updateUserId;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
     try {
-      const message = await login(username, password);
+      await login(username, password);
+      setSuccessMessage("Connexion réussie !");
       console.log("Connexion réussie :", username);
       navigate("/message/611cf330-16c8-428d-ba99-41599339e6fb");
       alert(message)
     } catch (err) {
       if (err instanceof Error) {
-        console.error(err.message)
-        alert("Mot de passe ou nom d'utilisateur incorrect.")
+        console.error(err.message);
+        setError("Mot de passe ou nom d'utilisateur incorrect.");
       } else {
         console.error("Erreur lors de la connexion.");
-        alert("Authentification impossible. Veuillez réessayer.")
+        setError("Authentification impossible. Veuillez réessayer.");
       }
     }
   };
@@ -36,6 +44,7 @@ function LoginForm() {
     const userId = localStorage.getItem("connectedUser");
     if (userId) {
       updateUserId(userId);
+      navigate(`/message/611cf330-16c8-428d-ba99-41599339e6fb`);
       navigate(`/message/611cf330-16c8-428d-ba99-41599339e6fb`);
     }
   }, [navigate]);
@@ -112,5 +121,4 @@ function LoginForm() {
     </div>
   );
 }
-
 export default LoginForm;
