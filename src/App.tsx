@@ -4,6 +4,8 @@ import RegisterForm from "./components/RegisterForm";
 import Chat from "./components/Chat";
 import { checkAuth } from "./services/api";
 
+import LeftMenu from "./components/LeftMenu";
+
 const App: React.FC = () => {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [message, setMessage] = useState("");
