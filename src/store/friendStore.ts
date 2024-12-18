@@ -1,6 +1,8 @@
+import { Key } from 'react';
 import { create } from 'zustand';
 
 type Friend = {
+  userId: Key | null | undefined;
   id: string;
   username: string;
 };
