@@ -14,11 +14,11 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LeftMenu />} />
+        <Route path="/" element={<LoginForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
-        <Route path="/message/:userId" element={<MessagesPage />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/message/:userId" element={<><LeftMenu /><MessagesPage /></>} />
+        <Route path="/profile" element={<><LeftMenu /><Profile /></>} />
       </Routes>
     </Router>
   );

@@ -18,10 +18,30 @@
 .friend-buttons {
     display: flex;
     justify-content: space-between;
+    height: 6rem;
 }
 
-.friend-buttons button {
+.friend-button {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     width: 50%;
+    background-color: #303030;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+}
+
+.friend-button.active {
+    background-color: #1D9BF0;
+}
+
+.friend-button.left {
+    border-right: 2px solid #1E1E1E;
+}
+
+.friend-button.right {
+    border-left: 2px solid #1E1E1E;
 }
 
 .profile-section {
