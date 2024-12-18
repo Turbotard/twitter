@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { getMessage, sendMessage, deleteMessage, logOut } from "../services/api";
+import {
+  getMessage,
+  sendMessage,
+  deleteMessage,
+  logOut,
+} from "../services/api";
 import { useParams } from "react-router-dom";
 import { FaTrashAlt } from "react-icons/fa";
 import { useStore } from "../store/store";
@@ -7,6 +12,7 @@ import { useStore } from "../store/store";
 interface Message {
   id: string;
   content: string;
+  sendAt?: string;
 }
 
 function Messages() {
@@ -17,8 +23,8 @@ function Messages() {
   const [newMessage, setNewMessage] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
 
-  const {userId: userId2} = useStore()
-  console.log(userId2)
+  const { userId: userId2 } = useStore();
+  console.log(userId2);
   useEffect(() => {
     if (!userId) {
       setError("Utilisateur non connecté.");
@@ -29,6 +35,7 @@ function Messages() {
     const fetchMessages = async () => {
       try {
         const data = await getMessage(userId);
+        console.log("Messages bruts récupérés :", data); // Log des messages récupérés
         setMessages(data);
       } catch (err: unknown) {
         if (err instanceof Error) {
@@ -49,12 +56,11 @@ function Messages() {
       setError("Le message ne peut pas être vide.");
       return;
     }
-    
+
     setIsSending(true);
 
     try {
-      if(userId)
-      {
+      if (userId) {
         console.log(userId);
         await sendMessage(userId, newMessage);
         setNewMessage("");
@@ -78,7 +84,9 @@ function Messages() {
   const handleDeleteMessage = async (messageId: string) => {
     try {
       await deleteMessage(messageId);
-      setMessages((prevMessages) => prevMessages.filter((message) => message.id !== messageId));
+      setMessages((prevMessages) =>
+        prevMessages.filter((message) => message.id !== messageId)
+      );
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -89,8 +97,8 @@ function Messages() {
   };
 
   const logOutMethode = async () => {
-    try{
-      console.log("test")
+    try {
+      console.log("test");
       await logOut();
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -99,7 +107,7 @@ function Messages() {
         setError("Erreur lors de la deconexion.");
       }
     }
-  }
+  };
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
@@ -115,35 +123,43 @@ function Messages() {
 
       {!isLoading && !error && messages.length > 0 && (
         <div>
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                padding: "10px",
-                marginBottom: "10px",
-                backgroundColor: "#f9f9f9",
-                position: "relative",
-                color: "black",
-              }}
-            >
-              <div style={{ marginTop: "8px", fontSize: "16px" }}>
-                {message.content}
-              </div>
-              <FaTrashAlt
-                onClick={() => handleDeleteMessage(message.id)}
+          {messages
+            .slice() // Crée une copie des messages pour ne pas muter l'état
+            .sort(
+              (a, b) =>
+                new Date(b.sendAt || "").getTime() -
+                new Date(a.sendAt || "").getTime()
+            )
+            .reverse()
+            .map((message) => (
+              <div
+                key={message.id}
                 style={{
-                  color: "red",
-                  position: "absolute",
-                  top: "10px",
-                  right: "10px",
-                  cursor: "pointer",
-                  fontSize: "20px",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                  padding: "10px",
+                  marginBottom: "10px",
+                  backgroundColor: "#f9f9f9",
+                  position: "relative",
+                  color: "black",
                 }}
-              />
-            </div>
-          ))}
+              >
+                <div style={{ marginTop: "8px", fontSize: "16px" }}>
+                  {message.content}
+                </div>
+                <FaTrashAlt
+                  onClick={() => handleDeleteMessage(message.id)}
+                  style={{
+                    color: "red",
+                    position: "absolute",
+                    top: "10px",
+                    right: "10px",
+                    cursor: "pointer",
+                    fontSize: "20px",
+                  }}
+                />
+              </div>
+            ))}
         </div>
       )}
 
@@ -174,7 +190,7 @@ function Messages() {
         </div>
       </div>
       <div>
-          <button
+        <button
           onClick={logOutMethode}
           style={{
             margin: "100px",
@@ -183,10 +199,11 @@ function Messages() {
             color: "white",
             border: "none",
             borderRadius: "5px",
-          }}>
-            logOut
-          </button>
-        </div>
+          }}
+        >
+          logOut
+        </button>
+      </div>
     </div>
   );
 }
