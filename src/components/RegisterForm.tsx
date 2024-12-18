@@ -1,20 +1,17 @@
 import { useState } from "react";
 import { register } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
-interface RegisterFormProps {
-  onSuccess: (message: string) => void;
-  onError: (message: string) => void;
-}
 
 function RegisterForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const navigate = useNavigate();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const message = await register(username, password);
+      await register(username, password);
       console.log("Inscription réussie :", username);
     } catch (err) {
       if (err instanceof Error) {
@@ -24,6 +21,10 @@ function RegisterForm() {
       }
     }
   };
+
+  const navLogin = () => {
+    navigate("/login")
+  }
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
@@ -77,6 +78,21 @@ function RegisterForm() {
           }}
         >
           S'inscrire
+        </button>
+        <button
+          type="submit"
+          onClick={navLogin}
+          style={{
+            padding: "10px",
+            backgroundColor: "#007BFF",
+            color: "#fff",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "16px",
+          }}
+        >
+          Se Connecter
         </button>
       </form>
     </div>

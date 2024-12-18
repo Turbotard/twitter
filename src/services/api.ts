@@ -87,6 +87,22 @@ export async function deleteMessage(messageId: string)
   }
 }
 
+export async function logOut()
+{ 
+  const response = await fetch(`http://localhost:3000/auth/logout`, {
+    method: "POST",
+    credentials: "include"
+  });
+  console.log(response.status)
+  if (response.ok) {
+    localStorage.removeItem("connectedUser");
+    return "logout"
+  }
+  else {
+    throw new Error(`Erreur lors du Logout ${response.status} ${response.statusText}`);
+  }
+}
+
 export async function sendFriendRequest(receiverId: string){
   const uniqueId = generateUniqueId();
   const response = await fetch(`http://localhost:3000/social/friend-request/${uniqueId}`, {

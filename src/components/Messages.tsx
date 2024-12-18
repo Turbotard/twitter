@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { getMessage, sendMessage, deleteMessage } from "../services/api";
+import { getMessage, sendMessage, deleteMessage, logOut } from "../services/api";
 import { useParams } from "react-router-dom";
 import { FaTrashAlt } from "react-icons/fa";
+import { useStore } from "../store/store";
 
 interface Message {
   id: string;
@@ -16,6 +17,8 @@ function Messages() {
   const [newMessage, setNewMessage] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
 
+  const {userId: userId2} = useStore()
+  console.log(userId2)
   useEffect(() => {
     if (!userId) {
       setError("Utilisateur non connecté.");
@@ -84,6 +87,19 @@ function Messages() {
       }
     }
   };
+
+  const logOutMethode = async () => {
+    try{
+      console.log("test")
+      await logOut();
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Erreur lors de la deconexion.");
+      }
+    }
+  }
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
@@ -157,6 +173,20 @@ function Messages() {
           </button>
         </div>
       </div>
+      <div>
+          <button
+          onClick={logOutMethode}
+          style={{
+            margin: "100px",
+            padding: "10px 15px",
+            backgroundColor: isSending ? "#ccc" : "#28A745",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+          }}>
+            logOut
+          </button>
+        </div>
     </div>
   );
 }
