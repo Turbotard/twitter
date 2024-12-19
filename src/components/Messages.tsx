@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMessage, sendMessage, deleteMessage } from "../services/api";
 import { useParams } from "react-router-dom";
-import { Trash2, Send } from "lucide-react";
-import { useStore } from "../store/store";
+import { Trash2, Send, Menu } from "lucide-react";
 import TopMenu from "./TopMenu";
 import LeftMenu from "./LeftMenu";
 import { format, isToday, isYesterday, parseISO } from "date-fns";
@@ -16,6 +15,13 @@ interface Message {
   isPending?: boolean;
 }
 
+interface User {
+  id: string;
+  username: string;
+  isOnline: boolean;
+  profilePicture?: string;
+}
+
 const MAX_CHARS = 500;
 
 const canDeleteMessage = (message: Message): boolean => {
@@ -24,15 +30,13 @@ const canDeleteMessage = (message: Message): boolean => {
 };
 
 function Messages() {
-  const { userId } = useParams();
+  const { userId } = useParams<{ userId: string }>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [newMessage, setNewMessage] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
-
-  const { userId: userId2 } = useStore();
-  console.log(userId2);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!userId) {
@@ -44,7 +48,6 @@ function Messages() {
     const fetchMessages = async () => {
       try {
         const data = await getMessage(userId);
-        console.log("Messages bruts récupérés :", data);
         setMessages(data);
       } catch (err: unknown) {
         if (err instanceof Error) {
@@ -75,13 +78,21 @@ function Messages() {
 
     try {
       if (userId) {
-        console.log(userId);
         await sendMessage(userId, newMessage);
-        setNewMessage("");
+        const connectedUser =
+          localStorage.getItem("connectedUser") || undefined;
+
         setMessages((prevMessages) => [
           ...prevMessages,
-          { id: Date.now().toString(), content: newMessage },
+          {
+            id: Date.now().toString(),
+            content: newMessage,
+            sendAt: new Date().toISOString(),
+            emitterId: connectedUser,
+          },
         ]);
+
+        setNewMessage("");
         setError(null);
       }
     } catch (err: unknown) {
@@ -111,8 +122,11 @@ function Messages() {
   };
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const text = e.target.value;
-    setNewMessage(text);
+    setNewMessage(e.target.value);
+  };
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
   const remainingChars = MAX_CHARS - newMessage.length;
@@ -122,7 +136,9 @@ function Messages() {
     const grouped: { [key: string]: Message[] } = {};
 
     messages.forEach((message) => {
-      const date = parseISO(message.sendAt || "");
+      if (!message.sendAt) return;
+
+      const date = parseISO(message.sendAt);
       if (isToday(date)) {
         grouped["Aujourd'hui"] = grouped["Aujourd'hui"] || [];
         grouped["Aujourd'hui"].push(message);
@@ -139,37 +155,59 @@ function Messages() {
     return grouped;
   };
 
+  const currentUser: User = {
+    id: userId || "",
+    username: localStorage.getItem("username") || "Utilisateur",
+    isOnline: true,
+    profilePicture: localStorage.getItem("profilePicture") || undefined,
+  };
+
   return (
-    <div className="flex h-screen bg-white dark:bg-black">
-      <LeftMenu />
-      <div className="flex-1 flex flex-col pl-80 overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-white dark:bg-black">
+      <div className="md:hidden flex items-center p-4 border-b border-gray-200 dark:border-gray-800">
+        <button
+          onClick={toggleMenu}
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+          aria-label="Toggle menu"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+      </div>
+
+      <div
+        className={`${
+          isMenuOpen ? "block" : "hidden"
+        } md:block md:w-80 md:flex-shrink-0 border-r border-gray-200 dark:border-gray-800 fixed md:static top-0 h-screen bg-white dark:bg-black z-50`}
+      >
+        <LeftMenu />
+      </div>
+
+      <div className="flex-1 flex flex-col overflow-hidden">
         <div className="border-b border-gray-200 dark:border-gray-800">
-          <TopMenu
-            user={{
-              id: userId || "",
-              username: localStorage.getItem("username") || "Utilisateur",
-              isOnline: true,
-              profilePicture:
-                localStorage.getItem("profilePicture") || undefined,
-            }}
-          />
+          <TopMenu user={currentUser} />
         </div>
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-8">
+
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8">
           {isLoading && (
-            <p className="text-center text-gray-500 dark:text-gray-400">
+            <p className="text-center text-gray-500 dark:text-gray-400 py-4">
               Chargement des messages...
             </p>
           )}
+
           {error && (
-            <p className="text-center text-red-500 p-2 rounded-md">{error}</p>
+            <p className="text-center text-red-500 p-4 rounded-md bg-red-50 dark:bg-red-900/10 my-4">
+              {error}
+            </p>
           )}
+
           {!isLoading && !error && messages.length === 0 && (
-            <p className="text-center text-gray-500 dark:text-gray-400">
+            <p className="text-center text-gray-500 dark:text-gray-400 py-4">
               Aucun message trouvé.
             </p>
           )}
+
           {!isLoading && !error && messages.length > 0 && (
-            <div className="space-y-4 pl-4">
+            <div className="space-y-4 py-4">
               {Object.entries(groupMessagesByDate(messages))
                 .sort(([date1], [date2]) => {
                   if (date1 === "Aujourd'hui") return -1;
@@ -179,36 +217,38 @@ function Messages() {
                   return new Date(date2).getTime() - new Date(date1).getTime();
                 })
                 .map(([group, groupMessages]) => (
-                  <div key={group}>
-                    <div className="text-center text-gray-500 dark:text-gray-400 mb-2">
-                      <hr className="border-gray-300 dark:border-gray-700" />
-                      <span className="px-4 bg-white dark:bg-black relative -top-3">
+                  <div key={group} className="space-y-4">
+                    <div className="text-center text-gray-500 dark:text-gray-400 relative">
+                      <hr className="border-gray-200 dark:border-gray-800" />
+                      <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-4 bg-white dark:bg-black">
                         {group}
                       </span>
                     </div>
+
                     {groupMessages.map((message) => (
-                      <div key={message.id} className="w-full flex">
+                      <div key={message.id} className="w-full flex mb-2">
                         <div
                           className={`w-full flex ${
                             canDeleteMessage(message)
                               ? "justify-end"
-                              : "justify-start"
+                              : "justify-start pl-0 md:pl-0" // Suppression du padding gauche
                           }`}
                         >
                           <div
-                            className={`relative max-w-[80%] p-3 rounded-2xl ${
+                            className={`relative group max-w-[90%] md:max-w-[80%] p-3 rounded-2xl ${
                               canDeleteMessage(message)
                                 ? "bg-blue-500 text-white"
-                                : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                                : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white ml-0" // Ajout de margin-left 0
                             }`}
                           >
                             <p className="text-sm break-words">
                               {message.content}
                             </p>
+
                             {canDeleteMessage(message) && (
                               <button
                                 onClick={() => handleDeleteMessage(message.id)}
-                                className="absolute -right-10 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                                className="absolute -right-8 md:-right-10 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity"
                                 title="Supprimer le message"
                                 aria-label="Supprimer le message"
                               >
@@ -224,31 +264,36 @@ function Messages() {
             </div>
           )}
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-800 px-12 py-4">
-          <div className="flex flex-col space-y-2">
-            <div className="flex-1 relative">
+
+        <div className="border-t border-gray-200 dark:border-gray-800 p-4 md:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="relative">
               <textarea
                 value={newMessage}
                 onChange={handleMessageChange}
                 placeholder="Écrivez votre message..."
                 maxLength={MAX_CHARS}
-                className={`w-full resize-none rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 p-4 pr-12 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  isOverLimit ? "border-red-500" : ""
-                }`}
+                className={`w-full resize-none rounded-2xl border ${
+                  isOverLimit
+                    ? "border-red-500"
+                    : "border-gray-200 dark:border-gray-700"
+                } bg-gray-100 dark:bg-gray-800 p-4 pr-12 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                 rows={1}
               />
+
               <button
                 onClick={handleSendMessage}
                 disabled={isSending || isOverLimit || newMessage.length === 0}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
                 title="Envoyer le message"
                 aria-label="Envoyer le message"
               >
                 <Send className="w-5 h-5" />
               </button>
             </div>
+
             <div
-              className={`text-sm text-right ${
+              className={`text-sm text-right mt-2 ${
                 remainingChars <= 50
                   ? remainingChars <= 0
                     ? "text-red-500"
