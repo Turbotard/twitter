@@ -39,6 +39,22 @@ function Messages() {
   const [isSending, setIsSending] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
+  // withCredentials permet de transmettre les cookies
+  const eventSource = new EventSource('http://localhost:3000/notifications', { withCredentials: true });
+
+  eventSource.addEventListener('message-received', (event) => {
+    const data = JSON.parse(event.data);
+    console.log(data);
+  });
+
+  eventSource.addEventListener('friend-request-received', (event) => {
+    const data = JSON.parse(event.data);
+    console.log(data);
+  });
+
+  // pour fermer la connexion
+  eventSource.close()
+
   useEffect(() => {
     if (!userId) {
       setError("Utilisateur non connecté.");
