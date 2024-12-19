@@ -17,7 +17,7 @@ function App() {
         <Route path="/" element={<LoginForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
-        <Route path="/message/:userId" element={<><LeftMenu /><MessagesPage /></>} />
+        <Route path="/message/:userId" element={<><LeftMenu /><div className="with-margin"><MessagesPage /></div></>} />
         <Route path="/profile" element={<><LeftMenu /><Profile /></>} />
       </Routes>
     </Router>

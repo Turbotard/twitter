@@ -177,7 +177,7 @@ function Messages() {
       <div
         className={`${
           isMenuOpen ? "block" : "hidden"
-        } md:block md:w-80 md:flex-shrink-0 border-r border-gray-200 dark:border-gray-800 fixed md:static top-0 h-screen bg-white dark:bg-black z-50`}
+        }`}
       >
         <LeftMenu />
       </div>
