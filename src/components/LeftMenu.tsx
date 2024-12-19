@@ -45,8 +45,8 @@ export default function LeftMenu() {
             <p
             className='profile-username user-found' 
             onClick={() => {
-              navigator.clipboard.writeText(username);
-              alert('Votre nom d\'utilisateur a été copié dans le presse-papier !');
+              navigator.clipboard.writeText(userId);
+              alert('Votre ID d\'ami a été copié dans le presse-papier !');
             }}
             >
             <span>{username}</span>
