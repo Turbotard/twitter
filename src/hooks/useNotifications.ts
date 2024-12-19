@@ -38,8 +38,8 @@ export default function useNotifications(){
       console.log("friend-request-accepted" + data);
       setAcceptedRequests((prev) => [...prev, data]);
       console.log("Demande d'ami acceptée :", data);
-    });
-
+    });  
+    
     eventSource.addEventListener("message-received", (event) => {
       const data: MessageReceived = JSON.parse(event.data);
       console.log("message-received" + data);
