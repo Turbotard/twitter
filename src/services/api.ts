@@ -129,8 +129,9 @@ export async function getFriendRequest(){
   });
 console.log(response.status);
   if (response.status === 200) {
-    console.log("Demande d'ami récupérée");
-    return await response.json();
+    const data = await response.json();
+    console.log("Demande d'ami récupérée" + data);
+    return data;
   }
 
   const error = await response.json();

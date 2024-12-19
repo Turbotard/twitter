@@ -39,6 +39,7 @@
     flex-direction: column;
     align-content: center;
     justify-content: center;
+    text-align: center;
 }
 
 .friend-button:hover {

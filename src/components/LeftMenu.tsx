@@ -6,6 +6,7 @@ import useStore, { useUsernameStore } from '../store/store';
 import '../styles/LeftMenu.css';
 import FriendsList from './FriendsList';
 import notificationIcon from '../assets/notification.svg';
+import FriendRequests from './FriendRequestPage';
 
 export default function LeftMenu() {
   const { userId } = useStore();
@@ -21,7 +22,7 @@ export default function LeftMenu() {
     <div className="left-menu-container">
       <img src={twitterLogo} alt="app-logo" className="app-logo" />
       {activeButton === 'left' && <FriendsList />}
-      {activeButton === 'right' && <div>Contenu</div>}
+      {activeButton === 'right' && <FriendRequests />}
       <div className="profile-section">
         <div className="friend-buttons">
           <Link to="#" className={`friend-button left ${activeButton === 'left' ? 'active' : ''}`} onClick={() => setActiveButton('left')}>
