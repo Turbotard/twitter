@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import twitterLogo from '../assets/mdi_twitter.png';
+import twitterLogo from '../assets/mdi_twitter.svg';
 import mockupPfp from '../assets/mockup-pfp.png';
 import useStore, { useUsernameStore } from '../store/store';
 import '../styles/LeftMenu.css';
 import FriendsList from './FriendsList';
 import notificationIcon from '../assets/notification.svg';
+import FriendRequests from './FriendRequestPage';
 
 export default function LeftMenu() {
   const { userId } = useStore();
@@ -21,7 +22,7 @@ export default function LeftMenu() {
     <div className="left-menu-container">
       <img src={twitterLogo} alt="app-logo" className="app-logo" />
       {activeButton === 'left' && <FriendsList />}
-      {activeButton === 'right' && <div>Contenu</div>}
+      {activeButton === 'right' && <FriendRequests />}
       <div className="profile-section">
         <div className="friend-buttons">
           <Link to="#" className={`friend-button left ${activeButton === 'left' ? 'active' : ''}`} onClick={() => setActiveButton('left')}>
@@ -45,8 +46,8 @@ export default function LeftMenu() {
             <p
             className='profile-username user-found' 
             onClick={() => {
-              navigator.clipboard.writeText(username);
-              alert('Votre nom d\'utilisateur a été copié dans le presse-papier !');
+              navigator.clipboard.writeText(userId);
+              alert('Votre ID d\'ami a été copié dans le presse-papier !');
             }}
             >
             <span>{username}</span>

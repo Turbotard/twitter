@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { sendFriendRequest } from "../services/api";
 
+import SendIcon from "../assets/send.svg";
+import "../styles/SendFriendRequest.css";
+
 function SendFriendRequest() {
   const [friendId, setFriendId] = useState("");
 
@@ -14,29 +17,19 @@ function SendFriendRequest() {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h3>Envoyer une requête d'ami</h3>
-      <textarea
-        placeholder="Entrez l'ID de l'ami..."
-        value={friendId}
-        onChange={(e) => setFriendId(e.target.value)}
-        style={{ marginBottom: "10px", padding: "10px", fontSize: "16px" }}
-      />
-      <br />
-      <button
-        onClick={handleSendFriendRequest}
-        style={{
-          padding: "10px 15px",
-          backgroundColor: "#28A745",
-          color: "white",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-          fontSize: "16px",
-        }}
-      >
-        Envoyer la requête
-      </button>
+    <div>
+      <div className="send-friend-request">
+        <textarea
+          placeholder="Entrez l'ID de l'ami"
+          value={friendId}
+          onChange={(e) => setFriendId(e.target.value)}
+        />
+        <button
+          onClick={handleSendFriendRequest}
+        >
+          <img src={SendIcon} alt="send" />
+        </button>
+      </div>
     </div>
   );
 }
