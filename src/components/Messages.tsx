@@ -5,6 +5,8 @@ import { Trash2, Send } from "lucide-react";
 import { useStore } from "../store/store";
 import TopMenu from "./TopMenu";
 import LeftMenu from "./LeftMenu";
+import { format, isToday, isYesterday, parseISO } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface Message {
   id: string;
@@ -116,10 +118,31 @@ function Messages() {
   const remainingChars = MAX_CHARS - newMessage.length;
   const isOverLimit = remainingChars < 0;
 
+  const groupMessagesByDate = (messages: Message[]) => {
+    const grouped: { [key: string]: Message[] } = {};
+
+    messages.forEach((message) => {
+      const date = parseISO(message.sendAt || "");
+      if (isToday(date)) {
+        grouped["Aujourd'hui"] = grouped["Aujourd'hui"] || [];
+        grouped["Aujourd'hui"].push(message);
+      } else if (isYesterday(date)) {
+        grouped["Hier"] = grouped["Hier"] || [];
+        grouped["Hier"].push(message);
+      } else {
+        const formattedDate = format(date, "dd MMM yyyy", { locale: fr });
+        grouped[formattedDate] = grouped[formattedDate] || [];
+        grouped[formattedDate].push(message);
+      }
+    });
+
+    return grouped;
+  };
+
   return (
     <div className="flex h-screen bg-white dark:bg-black">
       <LeftMenu />
-      <div className="flex-1 flex flex-col pl-80">
+      <div className="flex-1 flex flex-col pl-80 overflow-hidden">
         <div className="border-b border-gray-200 dark:border-gray-800">
           <TopMenu
             user={{
@@ -131,7 +154,7 @@ function Messages() {
             }}
           />
         </div>
-        <div className="flex-1 overflow-y-auto px-8">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-8">
           {isLoading && (
             <p className="text-center text-gray-500 dark:text-gray-400">
               Chargement des messages...
@@ -147,37 +170,55 @@ function Messages() {
           )}
           {!isLoading && !error && messages.length > 0 && (
             <div className="space-y-4 pl-4">
-              {messages
-                .slice()
-                .reverse()
-                .map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${
-                      canDeleteMessage(message)
-                        ? "justify-end"
-                        : "justify-start"
-                    }`}
-                  >
-                    <div
-                      className={`relative max-w-[80%] p-3 rounded-2xl ${
-                        canDeleteMessage(message)
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
-                      }`}
-                    >
-                      <p className="text-sm">{message.content}</p>
-                      {canDeleteMessage(message) && (
-                        <button
-                          onClick={() => handleDeleteMessage(message.id)}
-                          className="absolute -right-10 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                          title="Supprimer le message"
-                          aria-label="Supprimer le message"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
+              {Object.entries(groupMessagesByDate(messages))
+                .sort(([date1], [date2]) => {
+                  if (date1 === "Aujourd'hui") return -1;
+                  if (date1 === "Hier") return -1;
+                  if (date2 === "Aujourd'hui") return 1;
+                  if (date2 === "Hier") return 1;
+                  return new Date(date2).getTime() - new Date(date1).getTime();
+                })
+                .map(([group, groupMessages]) => (
+                  <div key={group}>
+                    <div className="text-center text-gray-500 dark:text-gray-400 mb-2">
+                      <hr className="border-gray-300 dark:border-gray-700" />
+                      <span className="px-4 bg-white dark:bg-black relative -top-3">
+                        {group}
+                      </span>
                     </div>
+                    {groupMessages.map((message) => (
+                      <div key={message.id} className="w-full flex">
+                        <div
+                          className={`w-full flex ${
+                            canDeleteMessage(message)
+                              ? "justify-end"
+                              : "justify-start"
+                          }`}
+                        >
+                          <div
+                            className={`relative max-w-[80%] p-3 rounded-2xl ${
+                              canDeleteMessage(message)
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                            }`}
+                          >
+                            <p className="text-sm break-words">
+                              {message.content}
+                            </p>
+                            {canDeleteMessage(message) && (
+                              <button
+                                onClick={() => handleDeleteMessage(message.id)}
+                                className="absolute -right-10 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                                title="Supprimer le message"
+                                aria-label="Supprimer le message"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ))}
             </div>
