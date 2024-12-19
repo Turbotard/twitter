@@ -121,6 +121,38 @@ export async function sendFriendRequest(receiverId: string){
   return error + "Demande Error";
 }
 
+export async function getFriendRequest(){
+  const response = await fetch(`http://localhost:3000/social/friend-requests`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+console.log(response.status);
+  if (response.status === 200) {
+    console.log("Demande d'ami récupérée");
+    return await response.json();
+  }
+
+  const error = await response.json();
+  return `${error} - Erreur lors de la récupération des demandes d'ami`;
+}
+
+
+export async function acceptFriendRequest(requestId: string){
+  const response = await fetch(`http://localhost:3000/social/friend-request/${requestId}/accept`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include"
+  });
+
+  if (response.status === 200) {
+    return "Demande d'ami" + requestId + " accepté";
+  }
+
+  const error = await response.json();
+  return (error + "Erreur lors de l'acceptation de la demande d'ami");
+}
+
 export async function getFriends(){
   const response = await fetch("http://localhost:3000/social/friends", {
     method: "GET",
