@@ -38,21 +38,21 @@ export default function FriendsList() {
         <div className="friends-list">
             {friends.length > 0 ? (
             <ul>
-                {friends.map((friend) => (
-                <li
-                    key={friend.userId}
-                    className={`friend-item ${activeFriendId === friend.userId ? 'active' : ''}`}
-                    onClick={() => friend.userId && handleLinkClick(friend.userId.toString())}
-                >
-                    <img src={mockupPfp} width="50" height="50" alt="profile-pic" className="profile-pic" />
-                    <Link to={`/message/${friend.userId}`} className="friend-link">
-                    {friend.username}
-                    </Link>
-                </li>
-                ))}
-            </ul>
+                    {friends.map((friend) => (
+                        <Link
+                            to={`/message/${friend.userId}`}
+                            className="friend-link"
+                            onClick={() => friend.userId && handleLinkClick(friend.userId.toString())}
+                        >
+                        <li key={friend.userId} className={`friend-item ${activeFriendId === friend.userId ? 'active' : ''}`}>
+                            <img src={mockupPfp} width="50" height="50" alt="profile-pic" className="profile-pic" />
+                            <p>{friend.username}</p>
+                        </li>
+                        </Link>
+                    ))}
+                </ul>
             ) : (
-            <p>Aucun ami trouvé.</p>
+                <p>Aucun ami trouvé.</p>
             )}
         </div>
     );

@@ -1,3 +1,12 @@
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
 .left-menu-container {
     background-color: #1E1E1E;
     position: fixed;
@@ -33,7 +42,7 @@
 }
 
 .friend-button:hover {
-    background-color: #AAAAAA;
+    background-color: #838383;
     cursor: pointer;
 }
 
@@ -47,6 +56,15 @@
 
 .friend-button.right {
     border-left: 2px solid #1E1E1E;
+}
+
+.friend-item:hover {
+    background-color: #838383;
+    cursor: pointer;
+}
+
+.friend-item.active {
+    background-color: #1D9BF0;
 }
 
 .profile-section {
@@ -63,11 +81,23 @@
     padding: 3%;
 }
 
-.profile-container img {
+.profile-picture {
     border-radius: 50%;
     margin-right: 3%;
 }
 
-.profile-container svg {
+.notification-icon {
     margin-left: auto;
 }
+
+.profile-username.user-found:hover span {
+    display: none;
+}
+
+.profile-username.user-found:hover::before {
+    cursor: pointer;
+    font-size: smaller;
+    content: "Copier le nom d'utilisateur";
+    animation: fadeIn 0.3s ease-in-out;
+}
+
