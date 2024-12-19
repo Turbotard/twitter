@@ -8,6 +8,7 @@ import RegisterForm from "./components/RegisterForm";
 import MessagesPage from "./components/Messages";
 import Profile from "./components/Profile";
 import LeftMenu from "./components/LeftMenu";
+import Notifications from "./components/Notifications";
 import "./styles/App.css";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/message/:userId" element={<><LeftMenu /><div className="with-margin"><MessagesPage /></div></>} />
+        <Route path="/notification" element={<><LeftMenu /><div className="with-margin"><Notifications /></div></>} />
         <Route path="/profile" element={<><LeftMenu /><Profile /></>} />
       </Routes>
     </Router>
