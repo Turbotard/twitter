@@ -32,6 +32,11 @@
     justify-content: center;
 }
 
+.friend-button:hover {
+    background-color: #AAAAAA;
+    cursor: pointer;
+}
+
 .friend-button.active {
     background-color: #1D9BF0;
 }
