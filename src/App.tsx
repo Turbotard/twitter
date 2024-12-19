@@ -9,6 +9,7 @@ import MessagesPage from "./components/Messages";
 import Profile from "./components/Profile";
 import LeftMenu from "./components/LeftMenu";
 import "./styles/App.css";
+import FriendRequests from "./components/FriendRequestPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/message/:userId" element={<MessagesPage />} />
+        <Route path="/friend-request" element={<FriendRequests />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
