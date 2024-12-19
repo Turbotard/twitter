@@ -6,6 +6,7 @@ import TopMenu from "./TopMenu";
 import LeftMenu from "./LeftMenu";
 import { format, isToday, isYesterday, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
+import "../styles/Messages.css";
 
 interface Message {
   id: string;
