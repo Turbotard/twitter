@@ -175,11 +175,7 @@ function Messages() {
         </button>
       </div>
 
-      <div
-        className={`${
-          isMenuOpen ? "block" : "hidden"
-        }`}
-      >
+      <div className={`${isMenuOpen ? "block" : "hidden"}`}>
         <LeftMenu />
       </div>
 
@@ -215,7 +211,7 @@ function Messages() {
                   if (date1 === "Hier") return -1;
                   if (date2 === "Aujourd'hui") return 1;
                   if (date2 === "Hier") return 1;
-                  return new Date(date2).getTime() - new Date(date1).getTime();
+                  return new Date(date2).getTime() - new Date(date1).getTime(); 
                 })
                 .map(([group, groupMessages]) => (
                   <div key={group} className="space-y-4">
@@ -225,41 +221,53 @@ function Messages() {
                         {group}
                       </span>
                     </div>
-
-                    {groupMessages.map((message) => (
-                      <div key={message.id} className="w-full flex mb-2">
-                        <div
-                          className={`w-full flex ${
-                            canDeleteMessage(message)
-                              ? "justify-end"
-                              : "justify-start pl-0 md:pl-0" // Suppression du padding gauche
-                          }`}
-                        >
+                    {groupMessages
+                      .slice()
+                      .sort((a, b) => {
+                        const dateA = a.sendAt
+                          ? parseISO(a.sendAt).getTime()
+                          : 0;
+                        const dateB = b.sendAt
+                          ? parseISO(b.sendAt).getTime()
+                          : 0;
+                        return dateA - dateB;
+                      })
+                      .map((message) => (
+                        <div key={message.id} className="w-full flex mb-2">
                           <div
-                            className={`relative group max-w-[90%] md:max-w-[80%] p-3 rounded-2xl ${
+                            className={`w-full flex ${
                               canDeleteMessage(message)
-                                ? "bg-blue-500 text-white"
-                                : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white ml-0" // Ajout de margin-left 0
+                                ? "justify-end"
+                                : "justify-start pl-0 md:pl-0"
                             }`}
                           >
-                            <p className="text-sm break-words">
-                              {message.content}
-                            </p>
+                            <div
+                              className={`relative group max-w-[90%] md:max-w-[80%] p-3 rounded-2xl ${
+                                canDeleteMessage(message)
+                                  ? "bg-blue-500 text-white"
+                                  : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white ml-0"
+                              }`}
+                            >
+                              <p className="text-sm break-words">
+                                {message.content}
+                              </p>
 
-                            {canDeleteMessage(message) && (
-                              <button
-                                onClick={() => handleDeleteMessage(message.id)}
-                                className="absolute -right-8 md:-right-10 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity"
-                                title="Supprimer le message"
-                                aria-label="Supprimer le message"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            )}
+                              {canDeleteMessage(message) && (
+                                <button
+                                  onClick={() =>
+                                    handleDeleteMessage(message.id)
+                                  }
+                                  className="absolute -right-8 md:-right-10 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  title="Supprimer le message"
+                                  aria-label="Supprimer le message"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 ))}
             </div>
