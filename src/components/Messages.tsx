@@ -137,23 +137,24 @@ function Messages() {
     });
 
     return grouped;
-  };  
+  };
 
   return (
     <div className="flex h-screen bg-white dark:bg-black">
       <LeftMenu />
-      <div className="flex-1 flex flex-col pl-80">
+      <div className="flex-1 flex flex-col pl-80 overflow-hidden">
         <div className="border-b border-gray-200 dark:border-gray-800">
           <TopMenu
             user={{
               id: userId || "",
               username: localStorage.getItem("username") || "Utilisateur",
               isOnline: true,
-              profilePicture: localStorage.getItem("profilePicture") || undefined,
+              profilePicture:
+                localStorage.getItem("profilePicture") || undefined,
             }}
           />
         </div>
-        <div className="flex-1 overflow-y-auto px-8">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-8">
           {isLoading && (
             <p className="text-center text-gray-500 dark:text-gray-400">
               Chargement des messages...
@@ -179,38 +180,42 @@ function Messages() {
                 })
                 .map(([group, groupMessages]) => (
                   <div key={group}>
-                    {/* Séparateur pour chaque groupe */}
                     <div className="text-center text-gray-500 dark:text-gray-400 mb-2">
                       <hr className="border-gray-300 dark:border-gray-700" />
-                      <span className="px-4 bg-white dark:bg-black">{group}</span>
+                      <span className="px-4 bg-white dark:bg-black relative -top-3">
+                        {group}
+                      </span>
                     </div>
                     {groupMessages.map((message) => (
-                      <div
-                        key={message.id}
-                        className={`flex ${
-                          canDeleteMessage(message)
-                            ? "justify-end"
-                            : "justify-start"
-                        }`}
-                      >
+                      <div key={message.id} className="w-full flex">
                         <div
-                          className={`relative max-w-[80%] p-3 rounded-2xl ${
+                          className={`w-full flex ${
                             canDeleteMessage(message)
-                              ? "bg-blue-500 text-white"
-                              : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                              ? "justify-end"
+                              : "justify-start"
                           }`}
                         >
-                          <p className="text-sm">{message.content}</p>
-                          {canDeleteMessage(message) && (
-                            <button
-                              onClick={() => handleDeleteMessage(message.id)}
-                              className="absolute -right-10 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                              title="Supprimer le message"
-                              aria-label="Supprimer le message"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          )}
+                          <div
+                            className={`relative max-w-[80%] p-3 rounded-2xl ${
+                              canDeleteMessage(message)
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                            }`}
+                          >
+                            <p className="text-sm break-words">
+                              {message.content}
+                            </p>
+                            {canDeleteMessage(message) && (
+                              <button
+                                onClick={() => handleDeleteMessage(message.id)}
+                                className="absolute -right-10 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                                title="Supprimer le message"
+                                aria-label="Supprimer le message"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -259,4 +264,5 @@ function Messages() {
     </div>
   );
 }
+
 export default Messages;
