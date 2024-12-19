@@ -1,36 +1,38 @@
-import { useState } from "react";
-import useEventSource from "../hooks/useEventSource";
+import useNotifications from "../hooks/useNotifications"
 
 function Notifications() {
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [friendRequests, setFriendRequests] = useState<any[]>([]);
-
-  useEventSource("http://localhost:3000/notifications", {
-    "message-received": (event) => {
-      const data = JSON.parse(event.data);
-      console.log("Message reçu :", data);
-      setNotifications((prev) => [...prev, data]);
-    },
-    "friend-request-received": (event) => {
-      const data = JSON.parse(event.data);
-      console.log("Demande d'ami reçue :", data);
-      setFriendRequests((prev) => [...prev, data]);
-    },
-  });
+  const { friendRequests, acceptedRequests, messages } = useNotifications();
 
   return (
     <div style={{ padding: "20px" }}>
       <h2>Notifications</h2>
+
+      <h3>Demandes d'ami reçues</h3>
       <ul>
-        {notifications.map((notification, index) => (
-          <li key={index}>{JSON.stringify(notification)}</li>
+        {friendRequests.map((request, index) => (
+          <li key={index}>
+            Utilisateur ID : {request.userId}
+          </li>
         ))}
       </ul>
 
-      <h2>Demandes d'ami</h2>
+      <h3>Demandes d'ami acceptées</h3>
       <ul>
-        {friendRequests.map((request, index) => (
-          <li key={index}>{JSON.stringify(request)}</li>
+        {acceptedRequests.map((request, index) => (
+          <li key={index}>
+            ID Demande : {request.id}, Envoyée par : {request.senderId}, Date :{" "}
+            {new Date(request.requestedAt).toLocaleString()}
+          </li>
+        ))}
+      </ul>
+
+      <h3>Messages reçus</h3>
+      <ul>
+        {messages.map((message, index) => (
+          <li key={index}>
+            ID : {message.id}, Émetteur : {message.emitterId}, Message : "{message.content}", Envoyé à :{" "}
+            {new Date(message.sendAt).toLocaleString()}
+          </li>
         ))}
       </ul>
     </div>
