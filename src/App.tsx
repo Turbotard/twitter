@@ -15,12 +15,13 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LeftMenu />} />
+        <Route path="/" element={<LoginForm />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
-        <Route path="/message/:userId" element={<MessagesPage />} />
-        <Route path="/friend-request" element={<FriendRequests />} />
+        <Route path="/friend-request" element={<><LeftMenu /><FriendRequests /></>} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/message/:userId" element={<><LeftMenu /><div className="with-margin"><MessagesPage /></div></>} />
+        <Route path="/profile" element={<><LeftMenu /><Profile /></>} />
       </Routes>
     </Router>
   );

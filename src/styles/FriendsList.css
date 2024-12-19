@@ -1,0 +1,23 @@
+.friend-item {
+    display: flex;
+    background-color: #303030;
+    align-items: center;
+    padding: 3%;
+    margin-bottom: 1%;
+}
+
+.friend-item:hover {
+    background-color: #AAAAAA;
+    cursor: pointer;
+}
+
+.friend-item img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.friend-item.active {
+    background-color: #1D9BF0;
+}

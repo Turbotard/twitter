@@ -19,8 +19,8 @@ const store = create<StoreState>()(
       updateUserId: (newUserId: string) => set({ userId: newUserId }),
     }),
     {
-      name: 'user-storage',
-    } as PersistOptions<StoreState>
+      name: 'userId-storage',
+    } as PersistOptions<StoreState, Partial<StoreState>>
   )
 );
 
@@ -33,7 +33,7 @@ const usernameStore = create<UserState>()(
     }),
     {
       name: 'user-storage',
-    } as PersistOptions<UserState>
+    } as PersistOptions<UserState, Partial<UserState>>
   )
 );
 
