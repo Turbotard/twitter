@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getFriendRequest, acceptFriendRequest } from "../services/api";
 import { FriendRequest } from "../models/FriendRequest";
+import SendFriendRequest from "./SendFriendRequest";
 
 function FriendRequests() {
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
@@ -58,54 +59,33 @@ function FriendRequests() {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+    <div>
+      <SendFriendRequest />
       <h2>Demandes d'ami</h2>
 
       {isLoading && <p>Chargement des demandes...</p>}
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p>{error}</p>}
 
       {!isLoading && !error && friendRequests.length === 0 && (
         <p>Aucune demande d'ami trouvée.</p>
       )}
 
       {!isLoading && !error && friendRequests.length > 0 && (
-        <ul style={{ listStyle: "none", padding: 0 }}>
+        <ul>
           {friendRequests.map((request) => (
-            <li
-              key={request.id}
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                padding: "10px",
-                marginBottom: "10px",
-                backgroundColor: "#f9f9f9",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
+            <li key={request.id}>
               <div>
-                <div style={{ fontSize: "16px", fontWeight: "bold" }}>
+                <div>
                   Utilisateur : {request.senderId}
                 </div>
-                <div style={{ fontSize: "14px", color: "#555" }}>
+                <div>
                   Reçue le : {new Date(request.requestedAt).toLocaleString()}
                 </div>
               </div>
               <button
                 onClick={() => handleAcceptRequest(request.id)}
                 disabled={processingRequest === request.id}
-                style={{
-                  padding: "10px 15px",
-                  backgroundColor:
-                    processingRequest === request.id ? "#ccc" : "#28A745",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor:
-                    processingRequest === request.id ? "not-allowed" : "pointer",
-                }}
               >
                 {processingRequest === request.id
                   ? "Traitement..."

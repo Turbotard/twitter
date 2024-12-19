@@ -1,0 +1,23 @@
+.send-friend-request {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.send-friend-request textarea {
+    padding: 1%;
+    border: none;
+    border-radius: 5px;
+    width: 75%;
+    resize: none;
+    background-color: #303030;
+    color: #ffffff;
+}
+
+.send-friend-request textarea:focus {
+    outline: none;
+}
+
+.send-friend-request button {
+    cursor: pointer;
+}

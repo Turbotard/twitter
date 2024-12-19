@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import twitterLogo from '../assets/mdi_twitter.png';
+import twitterLogo from '../assets/mdi_twitter.svg';
 import mockupPfp from '../assets/mockup-pfp.png';
 import useStore, { useUsernameStore } from '../store/store';
 import '../styles/LeftMenu.css';

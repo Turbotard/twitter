@@ -107,9 +107,12 @@ export async function logOut()
 
 export async function sendFriendRequest(receiverId: string){
   const uniqueId = generateUniqueId();
+  console.log("uniqueID  = " + uniqueId);
+  console.log("receiverId  = " + receiverId);
   const response = await fetch(`http://localhost:3000/social/friend-request/${uniqueId}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ receiverId }),
   });
 
