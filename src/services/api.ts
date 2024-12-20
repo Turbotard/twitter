@@ -142,7 +142,7 @@ console.log(response.status);
 }
 
 
-export async function acceptFriendRequest(requestId: string){
+export async function acceptFriendRequest(requestId: string): Promise<{ status: number; message?: string }> {
   const response = await fetch(`http://localhost:3000/social/friend-request/${requestId}/accept`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -150,11 +150,11 @@ export async function acceptFriendRequest(requestId: string){
   });
 
   if (response.status === 200) {
-    return "Demande d'ami" + requestId + " accepté";
+    return { status: 200, message: "Demande d'ami " + requestId + " accepté" };
   }
 
   const error = await response.json();
-  return (error + "Erreur lors de l'acceptation de la demande d'ami");
+  return { status: response.status, message: error + " Erreur lors de l'acceptation de la demande d'ami" };
 }
 
 export async function getFriends(){
