@@ -20,8 +20,6 @@ eventSource.addEventListener("message-received", (event) => {
   console.log(data);
 });
 
-eventSource.close();
-
 function App() {
   return (
     <Router>
