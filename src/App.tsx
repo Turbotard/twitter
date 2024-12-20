@@ -11,9 +11,11 @@ import LeftMenu from "./components/LeftMenu";
 import Notifications from "./components/Notifications";
 import "./styles/App.css";
 
-const eventSource = new EventSource('http://localhost:3000/notifications', { withCredentials: true });
+const eventSource = new EventSource("http://localhost:3000/notifications", {
+  withCredentials: true,
+});
 
-eventSource.addEventListener('message-received', (event) => {
+eventSource.addEventListener("message-received", (event) => {
   const data = JSON.parse(event.data);
   console.log(data);
 });

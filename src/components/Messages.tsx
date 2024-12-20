@@ -83,19 +83,6 @@ function Messages() {
     try {
       if (userId) {
         await sendMessage(userId, newMessage);
-        const connectedUser =
-          localStorage.getItem("connectedUser") || undefined;
-
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            id: Date.now().toString(),
-            content: newMessage,
-            sendAt: new Date().toISOString(),
-            emitterId: connectedUser,
-          },
-        ]);
-
         setNewMessage("");
         setError(null);
       }
