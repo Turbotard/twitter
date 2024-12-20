@@ -66,7 +66,7 @@ function Messages() {
     };
 
     fetchMessages();
-  }, [userId]);
+  }, [navigate, userId]);
 
   const handleSendMessage = async () => {
     if (!newMessage) {
