@@ -11,7 +11,7 @@ import FriendRequests from './FriendRequestPage';
 export default function LeftMenu() {
   const { userId } = useStore();
   const { username } = useUsernameStore();
-  const [activeButton, setActiveButton] = useState<string | null>(null);
+  const [activeButton, setActiveButton] = useState<string | null>('left');
 
   useEffect(() => {
     console.log(userId);
