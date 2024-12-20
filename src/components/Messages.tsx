@@ -7,6 +7,8 @@ import LeftMenu from "./LeftMenu";
 import { format, isToday, isYesterday, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import "../styles/Messages.css";
+import { useNavigate } from "react-router-dom";
+
 
 interface Message {
   id: string;
@@ -38,11 +40,13 @@ function Messages() {
   const [newMessage, setNewMessage] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-
+  const navigate = useNavigate();
   useEffect(() => {
-    if (!userId) {
+    if (!userId || !localStorage.getItem("connectedUser")) {  
       setError("Utilisateur non connecté.");
+      navigate("/login");
       setIsLoading(false);
+      
       return;
     }
 
@@ -207,12 +211,18 @@ function Messages() {
             <div className="space-y-4 py-4">
               {Object.entries(groupMessagesByDate(messages))
                 .sort(([date1], [date2]) => {
+                  // Priorité pour "Aujourd'hui" et "Hier"
                   if (date1 === "Aujourd'hui") return -1;
-                  if (date1 === "Hier") return -1;
                   if (date2 === "Aujourd'hui") return 1;
+                  if (date1 === "Hier") return -1;
                   if (date2 === "Hier") return 1;
-                  return new Date(date2).getTime() - new Date(date1).getTime(); 
+
+                  // Pour les autres dates, tri par date inverse (plus récent en haut)
+                  const parsedDate1 = new Date(date1).getTime();
+                  const parsedDate2 = new Date(date2).getTime();
+                  return parsedDate2 - parsedDate1; // Plus récent en haut
                 })
+                .reverse()
                 .map(([group, groupMessages]) => (
                   <div key={group} className="space-y-4">
                     <div className="text-center text-gray-500 dark:text-gray-400 relative">
@@ -230,7 +240,7 @@ function Messages() {
                         const dateB = b.sendAt
                           ? parseISO(b.sendAt).getTime()
                           : 0;
-                        return dateA - dateB;
+                        return dateB - dateA; // Plus récent en haut
                       })
                       .map((message) => (
                         <div key={message.id} className="w-full flex mb-2">
