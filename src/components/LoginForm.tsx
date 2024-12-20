@@ -24,7 +24,7 @@ function LoginForm() {
       setSuccessMessage("Connexion réussie !");
       console.log("Connexion réussie :", username);
       setTimeout(() => {
-        navigate("/message/611cf330-16c8-428d-ba99-41599339e6fb");
+        navigate("/");
       }, 2000);
     } catch (err) {
       if (err instanceof Error) {
@@ -41,7 +41,7 @@ function LoginForm() {
     const userId = localStorage.getItem("connectedUser");
     if (userId) {
       updateUserId(userId);
-      navigate(`/message/611cf330-16c8-428d-ba99-41599339e6fb`);
+      navigate(`/`);
     }
   }, [updateUserId, navigate]);
 

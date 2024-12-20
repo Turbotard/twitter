@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getMessage, sendMessage, deleteMessage } from "../services/api";
 import { useParams } from "react-router-dom";
 import { Trash2, Send, Menu } from "lucide-react";
@@ -7,6 +7,7 @@ import LeftMenu from "./LeftMenu";
 import { format, isToday, isYesterday, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import "../styles/Messages.css";
+import { useNavigate } from "react-router-dom";
 
 interface Message {
   id: string;
@@ -23,7 +24,7 @@ interface User {
   profilePicture?: string;
 }
 
-const MAX_CHARS = 500;
+const MAX_CHARS = 250;
 
 const canDeleteMessage = (message: Message): boolean => {
   const connectedUser = localStorage.getItem("connectedUser");
@@ -38,11 +39,15 @@ function Messages() {
   const [newMessage, setNewMessage] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const messageContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!userId) {
+    if (!userId || !localStorage.getItem("connectedUser")) {
       setError("Utilisateur non connecté.");
+      navigate("/login");
       setIsLoading(false);
+
       return;
     }
 
@@ -65,16 +70,22 @@ function Messages() {
       fetchMessages();
     }, 100);
     return () => clearInterval(interval);
-  }, [userId]);
+  }, [navigate, userId]);
 
-  const handleSendMessage = async () => {
-    if (!newMessage) {
-      setError("Le message ne peut pas être vide.");
+  useEffect(() => {
+    if (!isLoading && !error && messageContainerRef.current) {
+      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+    }
+  }, [messages, isLoading, error]);
+
+  const handleSendMessage = () => {
+    if (!newMessage.trim()) {
+      alert("Le message ne peut pas être vide.");
       return;
     }
 
     if (newMessage.length > MAX_CHARS) {
-      setError(`Le message ne peut pas dépasser ${MAX_CHARS} caractères.`);
+      alert(`Le message dépasse la limite de ${MAX_CHARS} caractères.`);
       return;
     }
 
@@ -174,7 +185,10 @@ function Messages() {
           <TopMenu user={currentUser} />
         </div>
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8">
+        <div
+          className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8"
+          ref={messageContainerRef}
+        >
           {isLoading && (
             <p className="text-center text-gray-500 dark:text-gray-400 py-4">
               Chargement des messages...
@@ -198,11 +212,15 @@ function Messages() {
               {Object.entries(groupMessagesByDate(messages))
                 .sort(([date1], [date2]) => {
                   if (date1 === "Aujourd'hui") return -1;
-                  if (date1 === "Hier") return -1;
                   if (date2 === "Aujourd'hui") return 1;
+                  if (date1 === "Hier") return -1;
                   if (date2 === "Hier") return 1;
-                  return new Date(date2).getTime() - new Date(date1).getTime(); 
+
+                  const parsedDate1 = new Date(date1).getTime();
+                  const parsedDate2 = new Date(date2).getTime();
+                  return parsedDate2 - parsedDate1;
                 })
+                .reverse()
                 .map(([group, groupMessages]) => (
                   <div key={group} className="space-y-4">
                     <div className="text-center text-gray-500 dark:text-gray-400 relative">
@@ -220,8 +238,9 @@ function Messages() {
                         const dateB = b.sendAt
                           ? parseISO(b.sendAt).getTime()
                           : 0;
-                        return dateA - dateB;
+                        return dateB - dateA;
                       })
+                      .reverse()
                       .map((message) => (
                         <div key={message.id} className="w-full flex mb-2">
                           <div
@@ -282,7 +301,9 @@ function Messages() {
 
               <button
                 onClick={handleSendMessage}
-                disabled={isSending || isOverLimit || newMessage.length === 0}
+                disabled={
+                  isSending || isOverLimit || newMessage.trim().length === 0
+                }
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
                 title="Envoyer le message"
                 aria-label="Envoyer le message"

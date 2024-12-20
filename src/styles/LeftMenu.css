@@ -98,7 +98,7 @@
 .profile-username.user-found:hover::before {
     cursor: pointer;
     font-size: smaller;
-    content: "Copier le nom d'utilisateur";
+    content: "Copier l'ID d'utilisateur";
     animation: fadeIn 0.3s ease-in-out;
 }
 

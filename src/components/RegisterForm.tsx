@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { register } from "../services/api";
 import { Eye, EyeOff, UserPlus, CheckCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+
 
 function RegisterForm() {
   const [username, setUsername] = useState("");
@@ -40,6 +41,12 @@ function RegisterForm() {
       }
     }
   };
+    useEffect(() => {
+      const userId = localStorage.getItem("connectedUser");
+      if (userId) {
+        navigate(`/`);
+      }
+    }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 flex items-center justify-center p-4">
