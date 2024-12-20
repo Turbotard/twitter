@@ -3,6 +3,9 @@ import { getFriendRequest, acceptFriendRequest } from "../services/api";
 import { FriendRequest } from "../models/FriendRequest";
 import SendFriendRequest from "./SendFriendRequest";
 
+import CheckIcon from "../assets/check-icon.svg";
+import "../styles/FriendRequests.css";
+
 function FriendRequests() {
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -59,25 +62,26 @@ function FriendRequests() {
   };
 
   return (
-    <div>
+    <div className="friend-requests-container">
       <SendFriendRequest />
-      <h2>Demandes d'ami</h2>
+      <hr />
+      <h2 className="title">Demandes d'ami</h2>
 
-      {isLoading && <p>Chargement des demandes...</p>}
+      {isLoading && <p className="friend-request-content">Chargement des demandes...</p>}
 
-      {error && <p>{error}</p>}
+      {error && <p className="friend-request-content">{error}</p>}
 
       {!isLoading && !error && friendRequests.length === 0 && (
-        <p>Aucune demande d'ami trouvée.</p>
+        <p className="friend-request-content">Aucune demande d'ami trouvée.</p>
       )}
 
       {!isLoading && !error && friendRequests.length > 0 && (
         <ul>
           {friendRequests.map((request) => (
-            <li key={request.id}>
-              <div>
-                <div>
-                  Utilisateur : {request.senderId}
+            <li className="friend-request-element" key={request.id}>
+              <div className="friend-request-info">
+                <div className="friend-request-sender">
+                  {request.senderId}
                 </div>
                 <div>
                   Reçue le : {new Date(request.requestedAt).toLocaleString()}
@@ -89,7 +93,7 @@ function FriendRequests() {
               >
                 {processingRequest === request.id
                   ? "Traitement..."
-                  : "Accepter"}
+                  : <img className="friend-request-checkmark" src={CheckIcon} alt="send" />}
               </button>
             </li>
           ))}
