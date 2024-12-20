@@ -8,8 +8,18 @@ import RegisterForm from "./components/RegisterForm";
 import MessagesPage from "./components/Messages";
 import Profile from "./components/Profile";
 import LeftMenu from "./components/LeftMenu";
+import Notifications from "./components/Notifications";
 import DefaultPage from "./components/DefaultPage";
 import "./styles/App.css";
+
+const eventSource = new EventSource("http://localhost:3000/notifications", {
+  withCredentials: true,
+});
+
+eventSource.addEventListener("message-received", (event) => {
+  const data = JSON.parse(event.data);
+  console.log(data);
+});
 
 function App() {
   return (
@@ -20,6 +30,7 @@ function App() {
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/message/:userId" element={<><LeftMenu /><div className="with-margin"><MessagesPage /></div></>} />
+        <Route path="/notification" element={<><LeftMenu /><div className="with-margin"><Notifications /></div></>} />
         <Route path="/profile" element={<><LeftMenu /><Profile /></>} />
       </Routes>
     </Router>

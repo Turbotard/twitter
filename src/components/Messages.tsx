@@ -66,7 +66,10 @@ function Messages() {
       }
     };
 
-    fetchMessages();
+    const interval = setInterval(() => {
+      fetchMessages();
+    }, 100);
+    return () => clearInterval(interval);
   }, [navigate, userId]);
 
   useEffect(() => {
@@ -76,7 +79,7 @@ function Messages() {
     }
   }, [messages, isLoading, error]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!newMessage.trim()) {
       alert("Le message ne peut pas être vide.");
       return;
@@ -91,23 +94,9 @@ function Messages() {
 
     try {
       if (userId) {
-        sendMessage(userId, newMessage).then(() => {
-          const connectedUser =
-            localStorage.getItem("connectedUser") || undefined;
-
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            {
-              id: Date.now().toString(),
-              content: newMessage,
-              sendAt: new Date().toISOString(),
-              emitterId: connectedUser,
-            },
-          ]);
-
-          setNewMessage(""); // Réinitialiser la zone de texte après l'envoi
-          setError(null);
-        });
+        await sendMessage(userId, newMessage);
+        setNewMessage("");
+        setError(null);
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
