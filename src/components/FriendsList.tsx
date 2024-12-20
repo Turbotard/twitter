@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getFriends } from '../services/api';
 import { useFriendStore } from '../store/friendStore';
 import { Link } from 'react-router-dom';

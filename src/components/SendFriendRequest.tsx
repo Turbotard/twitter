@@ -7,9 +7,17 @@ import "../styles/SendFriendRequest.css";
 function SendFriendRequest() {
   const [friendId, setFriendId] = useState("");
 
+
   const handleSendFriendRequest = async () => {
+    const userId = localStorage.getItem("connectedUser");
+
     try {
+      if (userId === friendId) {
+        alert("Vous ne pouvez pas vous ajouter en tant qu'ami.");
+        throw new Error("Vous ne pouvez pas vous ajouter en tant qu'ami.");
+      }
       await sendFriendRequest(friendId);
+      alert("Requête d'ami envoyée pour l'ID : " + friendId);
       console.log("Requête envoyée pour l'ID d'ami :", friendId);
     } catch (error) {
       console.error("Erreur lors de l'envoi de la requête :", error);

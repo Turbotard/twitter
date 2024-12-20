@@ -1,0 +1,49 @@
+.friend-requests-container {
+    padding-top: 3%;
+    padding-bottom: 3%;
+}
+
+.friend-requests-container hr {
+    margin: 7%;
+    border-color: #AAAAAA;
+}
+
+.title {
+    font-size: larger;
+    font-weight: bold;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    padding-left: 3%;
+}
+
+.friend-request-sender {
+    font-size: small;
+}
+
+.friend-request-element {
+    margin-bottom: 1%;
+    background-color: #303030;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    padding-left: 3%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.friend-request-element button {
+    margin-right: 3%;
+}
+
+.friend-request-info {
+    margin-right: auto;
+}
+
+.friend-request-checkmark {
+    background-color: #1D9BF0;
+    border-radius: 5px;
+}
+
+.friend-request-content {
+    margin-left: 3%;
+}
