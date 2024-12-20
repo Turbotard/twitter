@@ -17,6 +17,7 @@ function SendFriendRequest() {
         throw new Error("Vous ne pouvez pas vous ajouter en tant qu'ami.");
       }
       await sendFriendRequest(friendId);
+      alert("Requête d'ami envoyée pour l'ID : " + friendId);
       console.log("Requête envoyée pour l'ID d'ami :", friendId);
     } catch (error) {
       console.error("Erreur lors de l'envoi de la requête :", error);

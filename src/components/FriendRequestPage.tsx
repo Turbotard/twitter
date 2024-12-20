@@ -55,6 +55,7 @@ function FriendRequests() {
         setError(null);
       }
     } catch {
+      console.log("Erreur debug");
       setError("Erreur incconue lors de l'acceptation de la demande d'ami.");
     } finally {
       setProcessingRequest(null);
