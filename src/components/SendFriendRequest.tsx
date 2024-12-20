@@ -13,7 +13,7 @@ function SendFriendRequest() {
 
     try {
       if (userId === friendId) {
-        alert("Regarde le mec a tellement pas d'ami qu'il s'ajoute lui-même. LE LOOSER !!! ");
+        alert("Vous ne pouvez pas vous ajouter en tant qu'ami.");
         throw new Error("Vous ne pouvez pas vous ajouter en tant qu'ami.");
       }
       await sendFriendRequest(friendId);

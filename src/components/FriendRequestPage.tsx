@@ -47,7 +47,7 @@ function FriendRequests() {
     try {
       const response = await acceptFriendRequest(requestId);
       if (response.status !== 200) {
-        setError("Erreur lors de l'acceptation de la demande d'ami.");
+        setError("Erreur 200 lors de l'acceptation de la demande d'ami.");
       } else {
         setFriendRequests((prevRequests) =>
           prevRequests.filter((request) => request.id !== requestId)
@@ -55,7 +55,7 @@ function FriendRequests() {
         setError(null);
       }
     } catch {
-      setError("Erreur lors de l'acceptation de la demande d'ami.");
+      setError("Erreur incconue lors de l'acceptation de la demande d'ami.");
     } finally {
       setProcessingRequest(null);
     }
