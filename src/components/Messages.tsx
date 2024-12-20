@@ -71,7 +71,8 @@ function Messages() {
 
   useEffect(() => {
     if (!isLoading && !error && messageContainerRef.current) {
-      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+      messageContainerRef.current.scrollTop =
+        messageContainerRef.current.scrollHeight;
     }
   }, [messages, isLoading, error]);
 
@@ -152,17 +153,23 @@ function Messages() {
       if (!message.sendAt) return;
 
       const date = parseISO(message.sendAt);
-      if (isToday(date)) {
-        grouped["Aujourd'hui"] = grouped["Aujourd'hui"] || [];
-        grouped["Aujourd'hui"].push(message);
-      } else if (isYesterday(date)) {
-        grouped["Hier"] = grouped["Hier"] || [];
-        grouped["Hier"].push(message);
-      } else {
-        const formattedDate = format(date, "dd MMM yyyy", { locale: fr });
-        grouped[formattedDate] = grouped[formattedDate] || [];
-        grouped[formattedDate].push(message);
-      }
+      const formattedDate = isToday(date)
+        ? "Aujourd'hui"
+        : isYesterday(date)
+        ? "Hier"
+        : format(date, "dd MMM yyyy", { locale: fr });
+
+      grouped[formattedDate] = grouped[formattedDate] || [];
+      grouped[formattedDate].push(message);
+    });
+
+    // Trie les messages de chaque groupe par date exacte
+    Object.keys(grouped).forEach((key) => {
+      grouped[key].sort((a, b) => {
+        const dateA = a.sendAt ? parseISO(a.sendAt).getTime() : 0;
+        const dateB = b.sendAt ? parseISO(b.sendAt).getTime() : 0;
+        return dateA - dateB; // Tri ascendant
+      });
     });
 
     return grouped;
@@ -240,54 +247,40 @@ function Messages() {
                         {group}
                       </span>
                     </div>
-                    {groupMessages
-                      .slice()
-                      .sort((a, b) => {
-                        const dateA = a.sendAt
-                          ? parseISO(a.sendAt).getTime()
-                          : 0;
-                        const dateB = b.sendAt
-                          ? parseISO(b.sendAt).getTime()
-                          : 0;
-                        return dateB - dateA;
-                      })
-                      .reverse()
-                      .map((message) => (
-                        <div key={message.id} className="w-full flex mb-2">
+                    {groupMessages.map((message) => (
+                      <div key={message.id} className="w-full flex mb-2">
+                        <div
+                          className={`w-full flex ${
+                            canDeleteMessage(message)
+                              ? "justify-end"
+                              : "justify-start pl-0 md:pl-0"
+                          }`}
+                        >
                           <div
-                            className={`w-full flex ${
+                            className={`relative group max-w-[90%] md:max-w-[80%] p-3 rounded-2xl ${
                               canDeleteMessage(message)
-                                ? "justify-end"
-                                : "justify-start pl-0 md:pl-0"
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white ml-0"
                             }`}
                           >
-                            <div
-                              className={`relative group max-w-[90%] md:max-w-[80%] p-3 rounded-2xl ${
-                                canDeleteMessage(message)
-                                  ? "bg-blue-500 text-white"
-                                  : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white ml-0"
-                              }`}
-                            >
-                              <p className="text-sm break-words">
-                                {message.content}
-                              </p>
+                            <p className="text-sm break-words">
+                              {message.content}
+                            </p>
 
-                              {canDeleteMessage(message) && (
-                                <button
-                                  onClick={() =>
-                                    handleDeleteMessage(message.id)
-                                  }
-                                  className="absolute -right-8 md:-right-10 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity"
-                                  title="Supprimer le message"
-                                  aria-label="Supprimer le message"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              )}
-                            </div>
+                            {canDeleteMessage(message) && (
+                              <button
+                                onClick={() => handleDeleteMessage(message.id)}
+                                className="absolute -right-8 md:-right-10 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity"
+                                title="Supprimer le message"
+                                aria-label="Supprimer le message"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
                           </div>
                         </div>
-                      ))}
+                      </div>
+                    ))}
                   </div>
                 ))}
             </div>
