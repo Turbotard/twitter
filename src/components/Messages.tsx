@@ -9,7 +9,6 @@ import { fr } from "date-fns/locale";
 import "../styles/Messages.css";
 import { useNavigate } from "react-router-dom";
 
-
 interface Message {
   id: string;
   content: string;
@@ -25,7 +24,7 @@ interface User {
   profilePicture?: string;
 }
 
-const MAX_CHARS = 500;
+const MAX_CHARS = 250;
 
 const canDeleteMessage = (message: Message): boolean => {
   const connectedUser = localStorage.getItem("connectedUser");
@@ -42,11 +41,11 @@ function Messages() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const navigate = useNavigate();
   useEffect(() => {
-    if (!userId || !localStorage.getItem("connectedUser")) {  
+    if (!userId || !localStorage.getItem("connectedUser")) {
       setError("Utilisateur non connecté.");
       navigate("/login");
       setIsLoading(false);
-      
+
       return;
     }
 
@@ -68,37 +67,40 @@ function Messages() {
     fetchMessages();
   }, [navigate, userId]);
 
-  const handleSendMessage = async () => {
-    if (!newMessage) {
-      setError("Le message ne peut pas être vide.");
+  const handleSendMessage = () => {
+    if (!newMessage.trim()) {
+      alert("Le message ne peut pas être vide.");
       return;
     }
 
     if (newMessage.length > MAX_CHARS) {
-      setError(`Le message ne peut pas dépasser ${MAX_CHARS} caractères.`);
+      alert(`Le message dépasse la limite de ${MAX_CHARS} caractères.`);
       return;
     }
+
+    // Aucune tentative d'envoi n'est effectuée si l'une des conditions ci-dessus est remplie.
 
     setIsSending(true);
 
     try {
       if (userId) {
-        await sendMessage(userId, newMessage);
-        const connectedUser =
-          localStorage.getItem("connectedUser") || undefined;
+        sendMessage(userId, newMessage).then(() => {
+          const connectedUser =
+            localStorage.getItem("connectedUser") || undefined;
 
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            id: Date.now().toString(),
-            content: newMessage,
-            sendAt: new Date().toISOString(),
-            emitterId: connectedUser,
-          },
-        ]);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              id: Date.now().toString(),
+              content: newMessage,
+              sendAt: new Date().toISOString(),
+              emitterId: connectedUser,
+            },
+          ]);
 
-        setNewMessage("");
-        setError(null);
+          setNewMessage(""); // Réinitialiser la zone de texte après l'envoi
+          setError(null);
+        });
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -242,6 +244,7 @@ function Messages() {
                           : 0;
                         return dateB - dateA; // Plus récent en haut
                       })
+                      .reverse()
                       .map((message) => (
                         <div key={message.id} className="w-full flex mb-2">
                           <div
@@ -302,7 +305,9 @@ function Messages() {
 
               <button
                 onClick={handleSendMessage}
-                disabled={isSending || isOverLimit || newMessage.length === 0}
+                disabled={
+                  isSending || isOverLimit || newMessage.trim().length === 0
+                }
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-blue-500 hover:text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
                 title="Envoyer le message"
                 aria-label="Envoyer le message"
