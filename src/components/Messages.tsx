@@ -79,7 +79,7 @@ function Messages() {
     }
   }, [messages, isLoading, error]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!newMessage.trim()) {
       alert("Le message ne peut pas être vide.");
       return;
