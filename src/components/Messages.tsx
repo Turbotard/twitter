@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getMessage, sendMessage, deleteMessage } from "../services/api";
 import { useParams } from "react-router-dom";
 import { Trash2, Send, Menu } from "lucide-react";
@@ -40,6 +40,8 @@ function Messages() {
   const [isSending, setIsSending] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const navigate = useNavigate();
+  const messageContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!userId || !localStorage.getItem("connectedUser")) {
       setError("Utilisateur non connecté.");
@@ -67,6 +69,12 @@ function Messages() {
     fetchMessages();
   }, [navigate, userId]);
 
+  useEffect(() => {
+    if (!isLoading && !error && messageContainerRef.current) {
+      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+    }
+  }, [messages, isLoading, error]);
+
   const handleSendMessage = () => {
     if (!newMessage.trim()) {
       alert("Le message ne peut pas être vide.");
@@ -77,8 +85,6 @@ function Messages() {
       alert(`Le message dépasse la limite de ${MAX_CHARS} caractères.`);
       return;
     }
-
-    // Aucune tentative d'envoi n'est effectuée si l'une des conditions ci-dessus est remplie.
 
     setIsSending(true);
 
@@ -190,7 +196,10 @@ function Messages() {
           <TopMenu user={currentUser} />
         </div>
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8">
+        <div
+          className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8"
+          ref={messageContainerRef}
+        >
           {isLoading && (
             <p className="text-center text-gray-500 dark:text-gray-400 py-4">
               Chargement des messages...
@@ -213,16 +222,14 @@ function Messages() {
             <div className="space-y-4 py-4">
               {Object.entries(groupMessagesByDate(messages))
                 .sort(([date1], [date2]) => {
-                  // Priorité pour "Aujourd'hui" et "Hier"
                   if (date1 === "Aujourd'hui") return -1;
                   if (date2 === "Aujourd'hui") return 1;
                   if (date1 === "Hier") return -1;
                   if (date2 === "Hier") return 1;
 
-                  // Pour les autres dates, tri par date inverse (plus récent en haut)
                   const parsedDate1 = new Date(date1).getTime();
                   const parsedDate2 = new Date(date2).getTime();
-                  return parsedDate2 - parsedDate1; // Plus récent en haut
+                  return parsedDate2 - parsedDate1;
                 })
                 .reverse()
                 .map(([group, groupMessages]) => (
@@ -242,7 +249,7 @@ function Messages() {
                         const dateB = b.sendAt
                           ? parseISO(b.sendAt).getTime()
                           : 0;
-                        return dateB - dateA; // Plus récent en haut
+                        return dateB - dateA;
                       })
                       .reverse()
                       .map((message) => (
